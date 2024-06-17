@@ -1,5 +1,7 @@
 import java.awt.Color;
 
+import lib.GameLib;
+
 public class Main {
 	
 	/* Constantes relacionadas aos estados que os elementos   */

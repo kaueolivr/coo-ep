@@ -3,6 +3,7 @@ import java.awt.Color;
 import lib.GameLib;
 
 import entidades.Fundo;
+import entidades.ConjuntoInimigosTipo1;
 
 public class Teste {
 	
@@ -31,6 +32,10 @@ public class Teste {
 		Fundo fundoDistante = new Fundo(50, 0.045, Color.DARK_GRAY);
 		Fundo fundoProximo = new Fundo(20, 0.070, Color.GRAY);
 						
+		// Criação do objeto que agrupa os inimigos de tipo1
+		ConjuntoInimigosTipo1 inimigos1 = new ConjuntoInimigosTipo1(3 * Math.PI / 2, 0.0, 9.0, Color.CYAN, currentTime);
+		
+		
 		// Inicia interface gráfica
 		GameLib.initGraphics();
 		
@@ -60,6 +65,12 @@ public class Teste {
 			
 			// Já a variável "currentTime" nos dá o timestamp atual.
 			currentTime = System.currentTimeMillis();
+			
+			// Verifica se um novo inimigo de tipo 1 deve ser criado
+			inimigos1.verificaNovoInimigo(currentTime);
+			
+			// Verifica os estados de todos os inimigos de tipo 1
+			inimigos1.verificaEstado(currentTime, delta);
 
 			/*******************/
 			/* Desenho da cena */
@@ -68,6 +79,8 @@ public class Teste {
 			// Desenha os fundos
 			fundoDistante.desenha(delta);
 			fundoProximo.desenha(delta);
+			
+			inimigos1.desenha(currentTime);
 						
 			// Chamama a display() da classe GameLib atualiza o desenho exibido pela interface do jogo.
 			GameLib.display();

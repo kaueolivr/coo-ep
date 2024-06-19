@@ -4,10 +4,12 @@ import lib.GameLib;
 
 import entidades.Fundo;
 import entidades.ConjuntoInimigosTipo1;
+import entidades.ConjuntoProjeteisInimigos;
+import entidades.ConjuntoProjeteisJogador;
 
 public class Teste {
 	
-	// Constantes relacionadas aos estados que os elementos do jogo (player, projeteis ou inimigos) podem assumir.
+	// Constantes relacionadas aos estados que os projeteis podem assumir.
 	public static final int INACTIVE = 0;
 	public static final int ACTIVE = 1;
 	public static final int EXPLODING = 2;
@@ -34,6 +36,8 @@ public class Teste {
 						
 		// Criação do objeto que agrupa os inimigos de tipo1
 		ConjuntoInimigosTipo1 inimigos1 = new ConjuntoInimigosTipo1(3 * Math.PI / 2, 0.0, 9.0, Color.CYAN, currentTime);
+		ConjuntoProjeteisInimigos projeteisinimigos1 = new ConjuntoProjeteisInimigos(2.0, Color.RED, currentTime); 
+		ConjuntoProjeteisJogador projeteisjogador1 = new ConjuntoProjeteisJogador(Color.GREEN, currentTime); 
 		
 		
 		// Inicia interface gráfica
@@ -68,10 +72,14 @@ public class Teste {
 			
 			// Verifica se um novo inimigo de tipo 1 deve ser criado
 			inimigos1.verificaNovoInimigo(currentTime);
+			projeteisinimigos1.verificaNovoProjetil(currentTime);
+			projeteisjogador1.verificaNovoProjetil(currentTime);
 			
 			// Verifica os estados de todos os inimigos de tipo 1
 			inimigos1.verificaEstado(currentTime, delta);
-
+			projeteisinimigos1.verificaEstado(currentTime, delta);
+			projeteisjogador1.verificaEstado(currentTime, delta);
+			
 			/*******************/
 			/* Desenho da cena */
 			/*******************/
@@ -81,6 +89,8 @@ public class Teste {
 			fundoProximo.desenha(delta);
 			
 			inimigos1.desenha(currentTime);
+			projeteisinimigos1.desenha(currentTime);
+			projeteisjogador1.desenha(currentTime);
 						
 			// Chamama a display() da classe GameLib atualiza o desenho exibido pela interface do jogo.
 			GameLib.display();

@@ -71,8 +71,7 @@ public class InimigoTipo1 implements Personagem {
 	
 	// Implementar
 	public void atira() {
-		// TODO Auto-generated method stub
-
+		//criaNovoProjetil(tempoAtual, + informações desse inimigo)?
 	}
 
 	// Desenha o inimigo na tela

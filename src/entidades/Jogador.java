@@ -8,22 +8,24 @@ import lib.GameLib;
 
 public class Jogador implements Personagem{// estado
 	private Ponto2D posicao;
-	private double player_radius;							// raio (tamanho aproximado do player)
+																// raio (tamanho aproximado do player)
 	private double player_explosion_start;						// instante do início da explosão
 	private double player_explosion_end;						// instante do final da explosão
 	private long proximoTiro;
 	private long currentTime; 									// instante a partir do qual pode haver um próximo tiro
-	private Estado estado = Estado.ACTIVE;
+	private Estado estado = Estado.ATIVO;
 	private Formato formato = Formato.PLAYER;
 	private long inicioExplosao;
 	private long fimExplosao;
+	private Forma forma;
+	private double tamanhoPlayer;
 	
 	
 	public Jogador(double player_explosion_start, double player_explosion_end,
-			long player_nextShot, long currentTime, Estado estado) {
+			long player_nextShot, long currentTime, Estado estado, double tamanhoPlayer, Color corPlayer, Formato formatoPlayer, Forma forma) {
 		super();
 		this.posicao = new Ponto2D(GameLib.WIDTH / 2,GameLib.HEIGHT * 0.90,0.25,0.25);
-		this.player_radius = 12.0;
+		this.forma = new Forma(getTamanhoPlayer(), corPlayer, formatoPlayer);
 		this.player_explosion_start = player_explosion_start;
 		this.player_explosion_end = player_explosion_end;
 		this.proximoTiro = player_nextShot;
@@ -32,32 +34,39 @@ public class Jogador implements Personagem{// estado
 	}
 	
 	
-	public Jogador() {
+	
+
+
+	public Jogador( Estado estado, Formato formato, double tamanhoPlayer, Color corPlayer) {
 		super();
 		this.posicao = new Ponto2D(GameLib.WIDTH / 2,GameLib.HEIGHT * 0.90,0.25,0.25);
-		this.player_radius = 12.0;
+		this.forma = new Forma(tamanhoPlayer, corPlayer, formato);
+		this.estado = estado;
 	}
 
 
+
+
+
 	@Override
-	public int verificaEstado(long tempoAtual, long delta) {
-		if (this.estado == Estado.EXPLODING) this.fimExplosao(tempoAtual);
-		if(this.estado == Estado.ACTIVE) {
-			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INACTIVE; 
+	public Estado verificaEstado(long tempoAtual, long delta) {
+		if (this.estado == Estado.EXPLODINDO) this.fimExplosao(tempoAtual);
+		if(this.estado == Estado.ATIVO) {
+			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; 
 			else {
 				movimenta(delta);
 				if (tempoAtual > this.proximoTiro) atira();// Também precisa ter um this.posicao.getvY() < jogador.getY()
 			}
 		}
-		return 0;
+		return estado;
 	}
-	@Override
-	public void fimExplosao(long tempo) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void verificaSaidaDaTela() {
+
+	 public void fimExplosao(long tempo) {
+		 // TODO Auto-generated method stub
+		 
+	 }
+	 
+	 public void verificaSaidaDaTela() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -74,12 +83,12 @@ public class Jogador implements Personagem{// estado
 	@Override
 	public void desenha(long tempoAtual) {
 		// Desenha a explosão, caso o estado seja "explodindo"
-		if (this.estado == Estado.EXPLODING) {
+		if (this.estado == Estado.EXPLODINDO) {
 			double alpha = (tempoAtual - this.inicioExplosao) / (this.fimExplosao - this.inicioExplosao);
 			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
 		}
 		// No estado ativo, desenha o inimigo em si
-		if (this.estado == Estado.ACTIVE) {
+		if (this.estado == Estado.ATIVO) {
 			GameLib.setColor(Color.GREEN);
 			GameLib.drawPlayer(this.posicao.getX(),  this.posicao.getY(), this.getPlayer_radius());
 		}
@@ -98,12 +107,12 @@ public class Jogador implements Personagem{// estado
 
 
 	public double getPlayer_radius() {
-		return player_radius;
+		return tamanhoPlayer;
 	}
 
 
 	public void setPlayer_radius(double player_radius) {
-		this.player_radius = player_radius;
+		this.tamanhoPlayer = player_radius;
 	}
 
 
@@ -165,4 +174,64 @@ public class Jogador implements Personagem{// estado
 	public void setFormato(Formato formato) {
 		this.formato = formato;
 	}
+
+
+
+
+	public long getInicioExplosao() {
+		return inicioExplosao;
+	}
+
+
+
+
+	public void setInicioExplosao(long inicioExplosao) {
+		this.inicioExplosao = inicioExplosao;
+	}
+
+
+
+
+	public long getFimExplosao() {
+		return fimExplosao;
+	}
+
+
+
+
+	public void setFimExplosao(long fimExplosao) {
+		this.fimExplosao = fimExplosao;
+	}
+
+
+
+
+	public Forma getForma() {
+		return forma;
+	}
+
+
+
+
+	public void setForma(Forma forma) {
+		this.forma = forma;
+	}
+
+
+
+
+	public double getTamanhoPlayer() {
+		return tamanhoPlayer;
+	}
+
+
+
+
+	public void setTamanhoPlayer(double tamanhoPlayer) {
+		this.tamanhoPlayer = tamanhoPlayer;
+	}
+	
+
+	
+	
 }

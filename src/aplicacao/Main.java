@@ -1,3 +1,4 @@
+package aplicacao;
 import java.awt.Color;
 
 import lib.GameLib;

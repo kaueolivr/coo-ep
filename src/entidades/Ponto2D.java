@@ -46,7 +46,6 @@ public class Ponto2D {
 		this.vY = vY;
 	}
 	
-	
 	// Calcula a distância entre dois pontos
 	protected double distancia(Ponto2D outroPonto) {
 		double dx = this.x - this.getX();

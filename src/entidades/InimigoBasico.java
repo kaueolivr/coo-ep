@@ -4,35 +4,29 @@ import java.awt.Color;
 
 import lib.GameLib;
 
-import entidades.interfaces.Personagem;
-import entidades.Ponto2D;
+import entidades.enums.*;
 
-public class InimigoTipo1 implements Personagem {
-	// Constantes relacionadas aos estados que o inimigo pode assumir
-	public static final int INACTIVE = 0;
-	public static final int ACTIVE = 1;
-	public static final int EXPLODING = 2;
-		
+import entidades.interfaces.Personagem;
+
+public class InimigoBasico implements Personagem {		
 	private Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
-	private int estado;
+	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, formato e cor) por meio da classe Forma
+	
+	private Estado estado; // Estado (ativo, inativo ou explodindo)
 	private double angulo; // Ângulo (indica direção do movimento)
 	private double rv; // Velocidade de rotação
 	private double inicioExplosao; // Instante de início da explosão
 	private double fimExplosao; // Instante de fim da explosão
 	private double proximoTiro; // Instante do próximo tiro
-	private double raio; // Tamanho/raio
-	// private long proxInimigo; // Instante em que um novo inimigo de tipo 1 deve aparecer
-	private Color cor;
 	
-	public InimigoTipo1(double posicaoX, double posicaoY, double velocidadeInimigo, double anguloInimigo, double velocidadeRotacaoInimigo, double proximoTiroInimigo, double tamanhoInimigo1, Color corInimigo) {
+	public InimigoBasico(double posicaoX, double posicaoY, double velocidadeInimigo, double anguloInimigo, double velocidadeRotacaoInimigo, double proximoTiroInimigo, double tamanhoInimigo, Color corInimigo, Formato formatoInimigo) {
 		this.posicao = new Ponto2D(posicaoX, posicaoY, 0, velocidadeInimigo); // O ideal é não ter o 0, pois há uma única velocidade, apesar de Ponto2D ter duas
+		this.forma = new Forma(tamanhoInimigo, corInimigo, formatoInimigo);
 		
 		this.angulo = anguloInimigo;
 		this.rv = velocidadeRotacaoInimigo;
-		this.estado = ACTIVE;
+		this.estado = Estado.ATIVO;
 		this.proximoTiro = proximoTiroInimigo;
-		this.raio = tamanhoInimigo1;
-		this.cor = corInimigo;
 	}
 
 	/*public void colisaoComProjetil(Projetil projetil) {
@@ -40,26 +34,16 @@ public class InimigoTipo1 implements Personagem {
 
 	}*/
 
-	public int verificaEstado(long tempoAtual, long delta) {
-		if (this.estado == EXPLODING) this.fimExplosao(tempoAtual);
-		if (this.estado == ACTIVE) {
-			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = INACTIVE; // verificaSaidaDaTela
+	public Estado verificaEstado(long tempoAtual, long delta) {
+		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // fimExplosao
+		if (this.estado == Estado.ATIVO) {
+			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // verificaSaidaDaTela
 			else {
 				movimenta(delta);
-				if (tempoAtual > this.proximoTiro) atira();// Também precisa ter um this.posicao.getvY() < jogador.getY()
+				if (tempoAtual > this.proximoTiro) atira(); // Também precisa ter um this.posicao.getvY() < jogador.getY()
 			}
 		}
 		return this.estado;
-	}
-
-	// Manter este método?
-	public void fimExplosao(long tempoAtual) {
-		if (tempoAtual > this.fimExplosao) this.estado = INACTIVE;
-	}
-
-	// Manter este método?
-	public void verificaSaidaDaTela() {
-		if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = INACTIVE;
 	}
 
 	// Realiza o deslocamento
@@ -71,22 +55,17 @@ public class InimigoTipo1 implements Personagem {
 	
 	// Implementar
 	public void atira() {
-		//criaNovoProjetil(tempoAtual, + informa��es desse inimigo)?
+		//criaNovoProjetil(tempoAtual, + informa��es desse inimigo)?
 	}
 
 	// Desenha o inimigo na tela
 	public void desenha(long tempoAtual) {
 		// Desenha a explosão, caso o estado seja "explodindo"
-		if (this.estado == EXPLODING) {
+		if (this.estado == Estado.EXPLODINDO) {
 			double alpha = (tempoAtual - this.inicioExplosao) / (this.fimExplosao - this.inicioExplosao);
 			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
 		}
 		// No estado ativo, desenha o inimigo em si
-		if (this.estado == ACTIVE) {
-			GameLib.setColor(this.cor);
-			GameLib.drawCircle(this.posicao.getX(),  this.posicao.getY(), this.raio);
-		}
-
+		if (this.estado == Estado.ATIVO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
 	}
-
 }

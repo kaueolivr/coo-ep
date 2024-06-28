@@ -1,44 +1,31 @@
-import java.awt.Color;
+package aplicacao;
 
 import lib.GameLib;
 
-import entidades.Fundo;
-import entidades.ConjuntoInimigosTipo1;
-import entidades.ConjuntoProjeteisInimigos;
-import entidades.ConjuntoProjeteisJogador;
-
 public class Teste {
-	
-	// Constantes relacionadas aos estados que os projeteis podem assumir.
-	public static final int INACTIVE = 0;
-	public static final int ACTIVE = 1;
-	public static final int EXPLODING = 2;
-	
-
 	// Espera, sem fazer nada, até que o instante de tempo atual seja maior ou igual ao instante especificado no parâmetro "time".
-	public static void busyWait(long time){
-		
+	public static void busyWait(long time) {
 		while(System.currentTimeMillis() < time) Thread.yield();
 	}
 	
 	// Método principal
-	public static void main(String [] args){
+	public static void main(String [] args) {
 		// Indica que o jogo está em execução
 		boolean running = true;
+		
 
 		// Variáveis usadas no controle de tempo efetuado no main loop
 		long delta;
 		long currentTime = System.currentTimeMillis();
 		
-		// Criação dos objetos dos fundos próximo e distante
-		Fundo fundoDistante = new Fundo(50, 0.045, Color.DARK_GRAY);
-		Fundo fundoProximo = new Fundo(20, 0.070, Color.GRAY);
-						
-		// Criação do objeto que agrupa os inimigos de tipo1
-		ConjuntoInimigosTipo1 inimigos1 = new ConjuntoInimigosTipo1(3 * Math.PI / 2, 0.0, 9.0, Color.CYAN, currentTime);
-		ConjuntoProjeteisInimigos projeteisinimigos1 = new ConjuntoProjeteisInimigos(2.0, Color.RED, currentTime); 
-		ConjuntoProjeteisJogador projeteisjogador1 = new ConjuntoProjeteisJogador(Color.GREEN, currentTime); 
+		Jogo jogo = new Jogo();
 		
+		jogo.inicializaEntidades(currentTime);
+		
+		//ConjuntoProjeteisInimigos projeteisinimigos1 = new ConjuntoProjeteisInimigos(2.0, Color.RED, currentTime); 
+		//ConjuntoProjeteisJogador projeteisjogador1 = new ConjuntoProjeteisJogador(Color.GREEN, currentTime); 
+		
+		//Jogador player = new Jogador();
 		
 		// Inicia interface gráfica
 		GameLib.initGraphics();
@@ -70,27 +57,29 @@ public class Teste {
 			// Já a variável "currentTime" nos dá o timestamp atual.
 			currentTime = System.currentTimeMillis();
 			
-			// Verifica se um novo inimigo de tipo 1 deve ser criado
-			inimigos1.verificaNovoInimigo(currentTime);
-			projeteisinimigos1.verificaNovoProjetil(currentTime);
-			projeteisjogador1.verificaNovoProjetil(currentTime);
+			// Verifica se novos inimigos ou projéteis devem ser criados
+			jogo.verificaCriacao(currentTime);
 			
-			// Verifica os estados de todos os inimigos de tipo 1
-			inimigos1.verificaEstado(currentTime, delta);
-			projeteisinimigos1.verificaEstado(currentTime, delta);
-			projeteisjogador1.verificaEstado(currentTime, delta);
+			// Verifica o estado das entidades do jogo
+			jogo.verificaEstado(currentTime, delta);
+			
+			//projeteisinimigos1.verificaNovoProjetil(currentTime);
+			//projeteisjogador1.verificaNovoProjetil(currentTime);
+			
+			//projeteisinimigos1.verificaEstado(currentTime, delta);
+			//projeteisjogador1.verificaEstado(currentTime, delta);
 			
 			/*******************/
 			/* Desenho da cena */
 			/*******************/
 			
-			// Desenha os fundos
-			fundoDistante.desenha(delta);
-			fundoProximo.desenha(delta);
+			// Desenha as entidades do jogo
+			jogo.desenha(currentTime, delta);
 			
-			inimigos1.desenha(currentTime);
-			projeteisinimigos1.desenha(currentTime);
-			projeteisjogador1.desenha(currentTime);
+			//projeteisinimigos1.desenha(currentTime);
+			//projeteisjogador1.desenha(currentTime);
+			
+			//player.desenha(currentTime);
 						
 			// Chamama a display() da classe GameLib atualiza o desenho exibido pela interface do jogo.
 			GameLib.display();

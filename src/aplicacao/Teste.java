@@ -48,7 +48,7 @@ public class Teste {
 		/*                                                                                               */
 		/*************************************************************************************************/
 		
-		while(running){
+		while (running) {
 		
 			// Usada para atualizar o estado dos elementos do jogo player, projéteis e inimigos) "delta" indica quantos ms se passaram desde a última atualização.
 			delta = System.currentTimeMillis() - currentTime;

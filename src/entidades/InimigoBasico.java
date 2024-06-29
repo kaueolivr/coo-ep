@@ -9,16 +9,17 @@ import entidades.enums.*;
 import entidades.interfaces.Personagem;
 import entidades.interfaces.Projetil;
 
-public class InimigoBasico implements Personagem {		
-	private Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
-	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
+public class InimigoBasico implements Personagem {
 	
-	private Estado estado; // Estado (ativo, inativo ou explodindo)
-	private double angulo; // Ângulo (indica direção do movimento)
-	private double rv; // Velocidade de rotação
-	private double inicioExplosao; // Instante de início da explosão
-	private double fimExplosao; // Instante de fim da explosão
-	private double proximoTiro; // Instante do próximo tiro
+	protected Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
+	protected Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
+	
+	protected Estado estado; // Estado (ativo, inativo ou explodindo)
+	protected double angulo; // Ângulo (indica direção do movimento)
+	protected double rv; // Velocidade de rotação
+	protected double inicioExplosao; // Instante de início da explosão
+	protected double fimExplosao; // Instante de fim da explosão
+	protected double proximoTiro; // Instante do próximo tiro
 	
 	public InimigoBasico(double posicaoX, double posicaoY, double velocidadeInimigo, double anguloInimigo, double velocidadeRotacaoInimigo, double proximoTiroInimigo, double tamanhoInimigo, Color corInimigo, Formato formatoInimigo) {
 		this.posicao = new Ponto2D(posicaoX, posicaoY, 0, velocidadeInimigo); // O ideal é não ter o 0, pois há uma única velocidade, apesar de Ponto2D ter duas
@@ -26,8 +27,10 @@ public class InimigoBasico implements Personagem {
 		
 		this.angulo = anguloInimigo;
 		this.rv = velocidadeRotacaoInimigo;
-		this.estado = Estado.ATIVO;
+		
 		this.proximoTiro = proximoTiroInimigo;
+		
+		this.estado = Estado.ATIVO;
 	}
 
 	/*public void colisaoComProjetil(Projetil projetil) {
@@ -35,8 +38,9 @@ public class InimigoBasico implements Personagem {
 
 	}*/
 
+	// Verificação e atualização de estado do inimigo de tipo 1
 	public Estado verificaEstado(long tempoAtual, long delta) {
-		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // fimExplosao
+		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
 		if (this.estado == Estado.ATIVO) {
 			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
 			else movimenta(delta);
@@ -44,7 +48,7 @@ public class InimigoBasico implements Personagem {
 		return this.estado;
 	}
 
-	// Realiza o deslocamento
+	// Movimentação do inimigo de tipo 1
 	public void movimenta(long delta) {
 		this.posicao.setX(this.posicao.getX() + (this.posicao.getvY() * Math.cos(this.angulo) * delta)); // No caso do inimigo de tipo 1, o ângulo é 3pi/2 e o cosseno resulta em zero, de forma que não há deslocamento horizontal
 		this.posicao.setY(this.posicao.getY() + (this.posicao.getvY() * Math.sin(this.angulo) * delta * (-1.0)));

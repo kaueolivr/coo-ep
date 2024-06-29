@@ -42,15 +42,15 @@ public class Forma {
 	protected void setFormato(Formato formato) {
 		this.formato = formato;
 	}
-
-
+	
+	// Desenha na tela de acordo com a cor e o formato
 	public void desenha(double x, double y) {
 		
 		GameLib.setColor(this.cor);
 		
 		if (this.formato == Formato.CIRCLE) GameLib.drawCircle(x, y, this.raio);
-		else if (this.formato == Formato.PLAYER) GameLib.drawPlayer(x,y,this.raio);
-		else if(this.formato == Formato.DIAMOND ) GameLib.drawDiamond(x,y, this.raio);
+		else if (this.formato == Formato.PLAYER) GameLib.drawPlayer(x, y, this.raio);
+		else if (this.formato == Formato.DIAMOND ) GameLib.drawDiamond(x, y, this.raio);
 		
 	}
 }

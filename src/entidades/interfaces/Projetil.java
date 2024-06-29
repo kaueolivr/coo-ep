@@ -10,6 +10,4 @@ public interface Projetil {
 	public Estado verificaEstado(long tempoAtual, long delta); // Verifica o estado do projétil e invoca os métodos a seguir, dependendo do estado
 	public void movimenta(long delta); // Realiza o deslocamento dos projéteis
 	public void desenha(long tempoAtual); // Desenha o projétil na tela
-	
-	// Também existe uma verificação de se o jogador/inimigo pode atirar (e se existe espaço no array de projéteis), mas esse método pode estar vinculado ao jogador/inimigo
 }

@@ -14,8 +14,6 @@ import entidades.InimigoComposto;
 import entidades.ProjetilJogador;
 import entidades.ProjetilInimigo;
 
-import lib.GameLib;
-
 public class Jogo {
 	Fundo fundoDistante; // Objeto do fundo distante
 	Fundo fundoProximo; // Objeto do fundo próximo
@@ -29,13 +27,13 @@ public class Jogo {
 	private LinkedList<ProjetilInimigo> projeteisInimigos; // Coleção de projéteis dos inimigos
 	
 	// Inicializa as entidades do jogo
-	public void inicializaEntidades(long tempoAtual) {
+	public void inicializaEntidades(long tempoAtual, int vidaJogador) {
 		// Criação dos objetos dos fundos próximo e distante
 		this.fundoDistante = new Fundo(50, 0.045, Color.DARK_GRAY);
 		this.fundoProximo = new Fundo(20, 0.070, Color.GRAY);
 		
 		// Inicializa o objeto jogador
-		jogador = new Jogador(tempoAtual);
+		jogador = new Jogador(tempoAtual, vidaJogador);
 		
 		this.inimigosTipo1 = new LinkedList<InimigoSimples>(); // Cria a coleção de inimigos de tipo 1
 		InimigoSimples.proxInimigo = tempoAtual + 2000; // Salva o instante para ser criado o primeiro inimigo de tipo 1
@@ -47,7 +45,7 @@ public class Jogo {
 		this.projeteisJogador = new LinkedList<ProjetilJogador>(); // Cria a coleção de projéteis do jogador
 	}
 	
-	public void verificaColisoes(long tempoAtual) {
+	public void verificaColisoes(long tempoAtual) {	
 		// Verifica se ocorreram colisões entre o jogador e os projéteis dos inimigos
 		for (ProjetilInimigo pI : projeteisInimigos) this.jogador.colisaoComProjetil(tempoAtual, pI.getX(), pI.getY(), pI.getRaio());
 		

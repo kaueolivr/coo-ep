@@ -1,5 +1,7 @@
 package aplicacao;
 
+import java.util.Scanner;
+
 import lib.GameLib;
 
 public class Main {
@@ -11,6 +13,12 @@ public class Main {
 	// Método principal
 	public static void main(String [] args) {
 		
+		// Solicita a entrada da quantidade de pontos de vida do jogador ao usuário através da classe Scanner
+		System.out.print("Insira a quantidade de pontos de vida do jogador: ");
+		Scanner scanner = new Scanner(System.in);
+		int vidaJogador = scanner.nextInt();
+		scanner.close();
+		
 		// Indica que o jogo está em execução
 		boolean running = true;
 
@@ -18,9 +26,10 @@ public class Main {
 		long delta;
 		long currentTime = System.currentTimeMillis();
 		
+		// Inicializa a classe jogo e as entidades 
 		Jogo jogo = new Jogo();
-		
-		jogo.inicializaEntidades(currentTime);
+				
+		jogo.inicializaEntidades(currentTime, vidaJogador);
 		
 		// Inicia interface gráfica
 		GameLib.initGraphics();

@@ -79,14 +79,14 @@ public class InimigoSimples implements Personagem {
 	}
 	
 	// Verifica se o inimigo explodiu e, em caso positivo, se a explosão terminou
-	public boolean verificaExplosao(long tempoAtual) {
+	public boolean verificaFimExplosao(long tempoAtual) {
 		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) return true;
 		return false;
 	}
 
 	// Verificação e atualização de estado do inimigo de tipo 1
 	public Estado verificaEstado(long tempoAtual, long delta) {
-		if(verificaExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
+		if(verificaFimExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
 		if (this.estado == Estado.ATIVO) {
 			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
 			else movimenta(delta);

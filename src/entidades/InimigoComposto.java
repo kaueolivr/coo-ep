@@ -33,7 +33,7 @@ public class InimigoComposto extends InimigoSimples {
 	
 	// Verificação e atualização de estado do inimigo de tipo 2
 	public Estado verificaEstado(long tempoAtual, long delta) {
-		if(verificaExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
+		if(verificaFimExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
 		if (this.estado == Estado.ATIVO) {
 			if (this.posicao.getX() < -10 || this.posicao.getX() > GameLib.WIDTH + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
 			else movimenta(delta, GameLib.HEIGHT * 0.30);

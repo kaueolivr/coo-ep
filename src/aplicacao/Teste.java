@@ -56,25 +56,23 @@ public class Teste {
 			// Já a variável "currentTime" nos dá o timestamp atual.
 			currentTime = System.currentTimeMillis();
 			
-			// Verifica se novos inimigos ou projéteis devem ser criados
+			// Verifica as colisões entre personagens e projéteis
+			jogo.verificaColisoes(currentTime);
+			
+			// Verifica o estado das entidades do jogo - realizando movimento e disparo de projéteis se possível
+			jogo.verificaEstados(currentTime, delta);
+			
+			// Verifica se novos inimigos devem ser criados
 			jogo.verificaCriacao(currentTime);
 			
-			// Verifica o estado das entidades do jogo
-			jogo.verificaEstado(currentTime, delta);
+			// jogo.teste(currentTime);
 			
-			// Atira os projéteis dos personagens
-			jogo.atiraProjeteis(currentTime);
+			// Desenha as entidades do jogo
+			jogo.desenhaEntidades(currentTime, delta);
 			
 			//projeteisjogador1.verificaNovoProjetil(currentTime);
 			
 			//projeteisjogador1.verificaEstado(currentTime, delta);
-			
-			/*******************/
-			/* Desenho da cena */
-			/*******************/
-			
-			// Desenha as entidades do jogo
-			jogo.desenha(currentTime, delta);
 			
 			//projeteisjogador1.desenha(currentTime);
 			

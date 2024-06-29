@@ -14,7 +14,7 @@ public class Ponto2D {
 		this.vY = vY;
 	}
 
-	protected double getX() {
+	public double getX() {
 		return x;
 	}
 
@@ -22,7 +22,7 @@ public class Ponto2D {
 		this.x = x;
 	}
 
-	protected double getY() {
+	public double getY() {
 		return y;
 	}
 
@@ -48,8 +48,8 @@ public class Ponto2D {
 	
 	// Calcula a distância entre dois pontos
 	protected double distancia(Ponto2D outroPonto) {
-		double dx = this.x - this.getX();
-		double dy = this.y - this.getY();
+		double dx = this.getX() - outroPonto.getX();
+		double dy = this.getY() - outroPonto.getY();
 		double dist = Math.sqrt(dx * dx + dy * dy);
 		
 		return dist;

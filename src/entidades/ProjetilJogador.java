@@ -1,58 +1,41 @@
 package entidades;
 
 import java.awt.Color;
-import java.util.ArrayList;
+
+import entidades.enums.Estado;
+import entidades.enums.Formato;
 
 import entidades.interfaces.Projetil;
-import lib.GameLib;
 
 public class ProjetilJogador implements Projetil {
+	public Ponto2D posicao; // Utiliza-se composição para representar a posição do projétil inimigo por meio da classe Ponto2D
+	private Forma forma = new Forma(2.0, Color.GREEN, Formato.LINE); // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
 	
-	public static final int INACTIVE = 0;
-	public static final int ACTIVE = 1;
-	public static final int EXPLODING = 2;
+	private Estado estado; // Estado do projétil
 	
-	private Ponto2D posicao; //posi��o atrav�s do ponto 2d (X, y, vX, Vy)
-	private int estado; //estado do projetil
-	private Color cor; //cor do tiro do jogador
-	private double proximoProjetil;
-	
-	public ProjetilJogador (double posicaoX, double posicaoY, double velocidadeProjetil, double proximoTiro,Color corTiroInimigo) {
-		this.posicao = new Ponto2D(posicaoX, posicaoY, 0, velocidadeProjetil); // O ideal é não ter o 0, pois há uma única velocidade, apesar de Ponto2D ter duas
-		this.estado = ACTIVE;
-		this.proximoProjetil = proximoTiro;
-		this.cor = corTiroInimigo;
+	// Construtor do projétil (define o estado como ativo e define a posição/velocidade)
+	public ProjetilJogador (double posicaoX, double posicaoY, double velocidadeX, double velocidadeY) {
+		this.posicao = new Ponto2D(posicaoX, posicaoY, velocidadeX, velocidadeY);
+		this.estado = Estado.ATIVO;
 	}
 	
-	public int verificaEstado(long tempoAtual, long delta) {
-		if(this.estado== ACTIVE) {
-			if(this.posicao.getY() < 0) this.estado = INACTIVE;
-			else {
-				movimenta(delta);
-			}
+	// Verificação e atualização de estado do projétil
+	public Estado verificaEstado(long tempoAtual, long delta) {
+		if (this.estado == Estado.ATIVO) {
+			if (this.posicao.getY() < 0) this.estado = Estado.INATIVO; // Define o estado como inativo caso o projétil tenha saído da tela
+			else movimenta(delta); // Caso não tenha saído da tela, realiza o movimento
 		}
 		return this.estado;
 	}
-	
-	public void verificaSaidaDaTela() {
-		if(this.posicao.getvY() < 0) this.estado = INACTIVE;
-	}
 
-	
+	// Movimentação do projétil
 	public void movimenta(long delta) {
-		this.posicao.setX(this.posicao.getX() + (this.posicao.getvX() * delta));
-		this.posicao.setY(this.posicao.getY() + (this.posicao.getvY() * delta));
+		this.posicao.setX(this.posicao.getX() + (this.posicao.getvX() * delta));   
+		this.posicao.setY(this.posicao.getY() + (this.posicao.getvY() * delta));   
 	}
 
+	// Desenho do projétil na tela
 	public void desenha(long tempoAtual) {
-			if (this.estado == ACTIVE) {
-		}
-			GameLib.setColor(this.cor);
-			GameLib.drawLine(this.posicao.getX(), this.posicao.getY() - 5, this.posicao.getX(), this.posicao.getY() + 5);
-			GameLib.drawLine(this.posicao.getX() - 1, this.posicao.getY() - 3, this.posicao.getX() - 1, this.posicao.getY() + 3);
-			GameLib.drawLine(this.posicao.getX() + 1, this.posicao.getY() - 3, this.posicao.getX() + 1, this.posicao.getY() + 3);
-	}
-	public void teste () {
-		
+		if (this.estado == Estado.ATIVO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
 	}
 }

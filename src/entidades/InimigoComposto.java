@@ -11,13 +11,13 @@ import entidades.enums.Formato;
 // import entidades.interfaces.Projetil;
 
 // Classe do inimigo de tipo 2
-public class InimigoComposto extends InimigoBasico {
+public class InimigoComposto extends InimigoSimples {
 	
 	private static double proxInimigoPosX = GameLib.WIDTH * 0.20; // Coordenada x do próximo inimigo de tipo 2 a aparecer
 	private static int contagem = 0; // Contagem de inimigos de tipo 2
 	public static long proxInimigo; // Instante em que um novo inimigo de tipo 2 deve aparecer
 	
-	private boolean podeAtirar = false;
+	private boolean podeAtirar = false; // Booleano que define se é possível atirar
 	
 	public InimigoComposto(long tempoAtual) {
 		super(InimigoComposto.proxInimigoPosX, -10.0, 0.42, (3 * Math.PI) / 2, 0.0, 0.0, 12.0, Color.MAGENTA, Formato.DIAMOND);
@@ -34,9 +34,9 @@ public class InimigoComposto extends InimigoBasico {
 		}
 	}
 	
-	// Movimentação do inimigo de tipo 2
+	// Verificação e atualização de estado do inimigo de tipo 2
 	public Estado verificaEstado(long tempoAtual, long delta) {
-		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
+		if(verificaExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
 		if (this.estado == Estado.ATIVO) {
 			if (this.posicao.getX() < -10 || this.posicao.getX() > GameLib.WIDTH + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
 			else movimenta(delta, GameLib.HEIGHT * 0.30);

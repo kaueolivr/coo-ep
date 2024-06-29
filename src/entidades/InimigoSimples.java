@@ -9,7 +9,7 @@ import entidades.enums.*;
 import entidades.interfaces.Personagem;
 import entidades.interfaces.Projetil;
 
-public class InimigoBasico implements Personagem {
+public class InimigoSimples implements Personagem {
 	
 	protected Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
 	protected Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
@@ -21,8 +21,25 @@ public class InimigoBasico implements Personagem {
 	protected double fimExplosao; // Instante de fim da explosão
 	protected double proximoTiro; // Instante do próximo tiro
 	
-	public InimigoBasico(double posicaoX, double posicaoY, double velocidadeInimigo, double anguloInimigo, double velocidadeRotacaoInimigo, double proximoTiroInimigo, double tamanhoInimigo, Color corInimigo, Formato formatoInimigo) {
-		this.posicao = new Ponto2D(posicaoX, posicaoY, 0, velocidadeInimigo); // O ideal é não ter o 0, pois há uma única velocidade, apesar de Ponto2D ter duas
+	public static long proxInimigo; // Instante em que um novo inimigo de tipo 1 deve aparecer
+	
+	public InimigoSimples(long tempoAtual) {
+		this.posicao = new Ponto2D(Math.random() * (GameLib.WIDTH - 20.0) + 10.0, -10.0, 0, 0.20 + Math.random() * 0.15);
+		this.forma = new Forma(9.0, Color.CYAN, Formato.CIRCLE);
+		
+		this.angulo = 3 * Math.PI / 2;
+		this.rv = 0.0;
+		
+		this.proximoTiro = tempoAtual + 500;
+		
+		InimigoSimples.proxInimigo = tempoAtual + 500;
+		
+		this.estado = Estado.ATIVO;
+	}
+	
+	// Construtor usado na classe derivada InimigoComposto
+	public InimigoSimples(double posicaoX, double posicaoY, double velocidadeInimigo, double anguloInimigo, double velocidadeRotacaoInimigo, double proximoTiroInimigo, double tamanhoInimigo, Color corInimigo, Formato formatoInimigo) {
+		this.posicao = new Ponto2D(posicaoX, posicaoY, 0, velocidadeInimigo);
 		this.forma = new Forma(tamanhoInimigo, corInimigo, formatoInimigo);
 		
 		this.angulo = anguloInimigo;
@@ -33,14 +50,25 @@ public class InimigoBasico implements Personagem {
 		this.estado = Estado.ATIVO;
 	}
 
-	/*public void colisaoComProjetil(Projetil projetil) {
-		// TODO Auto-generated method stub
-
-	}*/
+	// Verifica a colisão do inimigo com um projétil
+	public void colisaoComProjetil(long tempoAtual, Ponto2D posProjetil) {
+		if (this.estado == Estado.ATIVO && this.posicao.distancia(posProjetil) < this.forma.getRaio()) {
+			// Caso tenha ocorrido a colisão, atualiza o estado e os instantes da explosão
+			this.estado = Estado.EXPLODINDO;
+			this.inicioExplosao = tempoAtual;
+			this.fimExplosao = tempoAtual + 500;
+		}
+	}
+	
+	// Verifica se o inimigo explodiu e, em caso positivo, se a explosão terminou
+	public boolean verificaExplosao(long tempoAtual) {
+		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) return true;
+		return false;
+	}
 
 	// Verificação e atualização de estado do inimigo de tipo 1
 	public Estado verificaEstado(long tempoAtual, long delta) {
-		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
+		if(verificaExplosao(tempoAtual)) this.estado = Estado.INATIVO; // Define o estado como inativo ao fim da explosão
 		if (this.estado == Estado.ATIVO) {
 			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
 			else movimenta(delta);

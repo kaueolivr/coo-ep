@@ -8,6 +8,7 @@ import java.awt.Color;
 import entidades.enums.Estado;
 
 import entidades.Fundo;
+import entidades.Jogador;
 import entidades.InimigoSimples;
 import entidades.InimigoComposto;
 import entidades.ProjetilJogador;
@@ -18,6 +19,8 @@ import lib.GameLib;
 public class Jogo {
 	Fundo fundoDistante; // Objeto do fundo distante
 	Fundo fundoProximo; // Objeto do fundo próximo
+	
+	private Jogador jogador;
 	
 	private LinkedList<InimigoSimples> inimigosTipo1; // Coleção de inimigos de tipo 1
 	private LinkedList<InimigoComposto> inimigosTipo2; // Coleção de inimigos de tipo 2
@@ -31,6 +34,9 @@ public class Jogo {
 		this.fundoDistante = new Fundo(50, 0.045, Color.DARK_GRAY);
 		this.fundoProximo = new Fundo(20, 0.070, Color.GRAY);
 		
+		// Inicializa o objeto jogador
+		jogador = new Jogador(tempoAtual);
+		
 		this.inimigosTipo1 = new LinkedList<InimigoSimples>(); // Cria a coleção de inimigos de tipo 1
 		InimigoSimples.proxInimigo = tempoAtual + 2000; // Salva o instante para ser criado o primeiro inimigo de tipo 1
 		
@@ -42,28 +48,43 @@ public class Jogo {
 	}
 	
 	public void verificaColisoes(long tempoAtual) {
+		// Verifica se ocorreram colisões entre o jogador e os projéteis dos inimigos
+		for (ProjetilInimigo pI : projeteisInimigos) this.jogador.colisaoComProjetil(tempoAtual, pI.getX(), pI.getY(), pI.getRaio());
+		
+		// Verifica se ocorreram colisões entre o jogador e os inimigos
+		for (InimigoSimples i1 : this.inimigosTipo1) this.jogador.colisaoComInimigo(tempoAtual, i1.getX(), i1.getY(), i1.getRaio());
+		for (InimigoComposto i2 : this.inimigosTipo2) this.jogador.colisaoComInimigo(tempoAtual, i2.getX(), i2.getY(), i2.getRaio());
+		
 		// Verifica se ocorreram colisões entre os projéteis do jogador e os inimigos
 		for (ProjetilJogador pJ : projeteisJogador) {
-			for (InimigoSimples i1 : this.inimigosTipo1) i1.colisaoComProjetil(tempoAtual, pJ.posicao);
-			for (InimigoComposto i2 : this.inimigosTipo2) i2.colisaoComProjetil(tempoAtual, pJ.posicao);
+			for (InimigoSimples i1 : this.inimigosTipo1) i1.colisaoComProjetil(tempoAtual, pJ.getX(), pJ.getY());
+			for (InimigoComposto i2 : this.inimigosTipo2) i2.colisaoComProjetil(tempoAtual, pJ.getX(), pJ.getY());
 		}
 	}
 	
 	// Verifica o estado das entidades
 	public void verificaEstados(long tempoAtual, long delta) {
+		
+		// Verifica o estado do jogador
+		Estado estadoJogador = this.jogador.verificaEstado(tempoAtual, delta); 
+		if (estadoJogador == Estado.ATIVO) {
+			ProjetilJogador projetilJ = this.jogador.atira(tempoAtual);
+			if (projetilJ != null) this.projeteisJogador.addLast(projetilJ);
+		}
+		
 		// Cria um iterador para percorrer a coleção de inimigos de tipo 1
 		Iterator<InimigoSimples> i1 = this.inimigosTipo1.iterator();
 		
 		while (i1.hasNext()) {
 			InimigoSimples inimigo1 = i1.next();
-			Estado estadoInimigo = inimigo1.verificaEstado(tempoAtual, delta); 
+			Estado estadoInimigo1 = inimigo1.verificaEstado(tempoAtual, delta); 
 			
 			// Caso um inimigo tenha ficado inativo (saído da tela), remove-o da coleção
-			if (estadoInimigo == Estado.INATIVO) i1.remove();
+			if (estadoInimigo1 == Estado.INATIVO) i1.remove();
 			// Caso o inimigo esteja ativo, tenta atirar e armazena os projéteis na coleção, caso tenha ocorrido o disparo
-			else if (estadoInimigo == Estado.ATIVO) {
-				ProjetilInimigo projetil = (ProjetilInimigo) inimigo1.atira(tempoAtual);
-				if (projetil != null) this.projeteisInimigos.addLast(projetil);
+			else if (estadoInimigo1 == Estado.ATIVO) {
+				ProjetilInimigo projetilI1 = (ProjetilInimigo) inimigo1.atira(tempoAtual, this.jogador.getY());
+				if (projetilI1 != null) this.projeteisInimigos.addLast(projetilI1);
 			}
 		}
 		
@@ -72,27 +93,17 @@ public class Jogo {
 		
 		while (i2.hasNext()) {
 			InimigoComposto inimigo2 = i2.next();
-			Estado estadoInimigo = inimigo2.verificaEstado(tempoAtual, delta); 
+			Estado estadoInimigo2 = inimigo2.verificaEstado(tempoAtual, delta); 
 			
 			// Caso um inimigo tenha ficado inativo (saído da tela), remove-o da coleção
-			if (estadoInimigo == Estado.INATIVO) i2.remove();
+			if (estadoInimigo2 == Estado.INATIVO) i2.remove();
 			// Caso o inimigo esteja ativo, tenta atirar e armazena os projéteis na coleção, caso tenha ocorrido o disparo
-			else if (estadoInimigo == Estado.ATIVO) {
+			else if (estadoInimigo2 == Estado.ATIVO) {
 				ArrayList<ProjetilInimigo> projeteis = inimigo2.atira();
 				if (projeteis != null) {
 					for (ProjetilInimigo j : projeteis) this.projeteisInimigos.addLast(j);
 				}
 			}
-		}
-		
-		// Cria um iterador para percorrer a coleção de projéteis dos inimigos
-		Iterator<ProjetilInimigo> pI = this.projeteisInimigos.iterator();
-		
-		while (pI.hasNext()) {
-			Estado estadoProjetil = pI.next().verificaEstado(tempoAtual, delta); 
-			
-			// Caso um projétil tenha ficado inativo (saído da tela), remove-o da coleção
-			if (estadoProjetil == Estado.INATIVO) pI.remove();
 		}
 		
 		// Cria um iterador para percorrer a coleção de projéteis do jogador
@@ -104,13 +115,15 @@ public class Jogo {
 			// Caso um projétil tenha ficado inativo (saído da tela), remove-o da coleção
 			if (estadoProjetil == Estado.INATIVO) pJ.remove();
 		}
-	}
-	
-	private long t = 100;
-	public void teste(long tempoAtual) {
-		if (tempoAtual >= t) {
-			this.projeteisJogador.addLast(new ProjetilJogador(Math.random() * (GameLib.WIDTH - 20.0) + 10.0, GameLib.HEIGHT - 10, 0.0, -1.0));
-			t = tempoAtual + 100;
+		
+		// Cria um iterador para percorrer a coleção de projéteis dos inimigos
+		Iterator<ProjetilInimigo> pI = this.projeteisInimigos.iterator();
+		
+		while (pI.hasNext()) {
+			Estado estadoProjetil = pI.next().verificaEstado(tempoAtual, delta); 
+			
+			// Caso um projétil tenha ficado inativo (saído da tela), remove-o da coleção
+			if (estadoProjetil == Estado.INATIVO) pI.remove();
 		}
 	}
 	
@@ -128,6 +141,9 @@ public class Jogo {
 		// Desenha os fundos
 		this.fundoDistante.desenha(delta);
 		this.fundoProximo.desenha(delta);
+		
+		// Desenha o jogador
+		this.jogador.desenha(tempoAtual);
 		
 		// Desenha os inimigos de tipo 1
 		for (InimigoSimples i1 : this.inimigosTipo1) i1.desenha(tempoAtual);

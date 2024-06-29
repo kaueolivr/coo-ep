@@ -3,14 +3,14 @@ package entidades;
 import java.awt.Color;
 
 import lib.GameLib;
-import entidades.enums.Estado;
-import entidades.enums.Formato;
 
+import entidades.enums.*;
+
+// Classe que representa a forma (cor, tamanho e formato) de uma entidade
 public class Forma {
-	protected double raio;
-	protected Color cor;
-	protected Formato formato;
-	protected Estado estado;
+	private double raio;
+	private Color cor;
+	private Formato formato;
 	
 	protected Forma(double raio, Color cor, Formato formato) {
 		this.raio = raio;
@@ -45,7 +45,6 @@ public class Forma {
 	
 	// Desenha na tela de acordo com a cor e o formato
 	public void desenha(double x, double y) {
-		
 		GameLib.setColor(this.cor);
 		
 		if (this.formato == Formato.CIRCLE) GameLib.drawCircle(x, y, this.raio);

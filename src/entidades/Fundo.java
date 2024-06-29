@@ -2,9 +2,10 @@ package entidades;
 
 import java.util.ArrayList;
 import java.awt.Color;
+
 import lib.GameLib;
 
-// Talvez a classe possa conter tanto o fundo mais próximo quanto o mais distante?
+// Classe do fundo do jogo
 public class Fundo {
 	private ArrayList<Double> estrelasX;
 	private ArrayList<Double> estrelasY;

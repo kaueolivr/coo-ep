@@ -2,11 +2,11 @@ package entidades;
 
 import java.awt.Color;
 
-import entidades.enums.Estado;
-import entidades.enums.Formato;
+import entidades.enums.*;
 
 import entidades.interfaces.Projetil;
 
+// Classe do projétil do jogador
 public class ProjetilJogador implements Projetil {
 	public Ponto2D posicao; // Utiliza-se composição para representar a posição do projétil inimigo por meio da classe Ponto2D
 	private Forma forma = new Forma(2.0, Color.GREEN, Formato.LINE); // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
@@ -17,6 +17,16 @@ public class ProjetilJogador implements Projetil {
 	public ProjetilJogador (double posicaoX, double posicaoY, double velocidadeX, double velocidadeY) {
 		this.posicao = new Ponto2D(posicaoX, posicaoY, velocidadeX, velocidadeY);
 		this.estado = Estado.ATIVO;
+	}
+	
+	// Método get da coordenada X do projétil
+	public double getX() {
+		return this.posicao.getX();
+	}
+	
+	// Método get da coordenada Y do projétil
+	public double getY() {
+		return this.posicao.getY();
 	}
 	
 	// Verificação e atualização de estado do projétil

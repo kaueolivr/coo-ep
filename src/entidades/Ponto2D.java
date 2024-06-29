@@ -1,5 +1,6 @@
 package entidades;
 
+// Classe que representa a posição (coordenadas e velocidades nos eixos) de uma entidade
 public class Ponto2D {
 	private double x; // Coordenada x
 	private double y; // Coordenada y
@@ -47,9 +48,9 @@ public class Ponto2D {
 	}
 	
 	// Calcula a distância entre dois pontos
-	protected double distancia(Ponto2D outroPonto) {
-		double dx = this.getX() - outroPonto.getX();
-		double dy = this.getY() - outroPonto.getY();
+	protected double distancia(double pX, double pY) {
+		double dx = this.getX() - pX;
+		double dy = this.getY() - pY;
 		double dist = Math.sqrt(dx * dx + dy * dy);
 		
 		return dist;

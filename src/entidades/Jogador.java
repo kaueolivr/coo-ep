@@ -1,54 +1,115 @@
 package entidades;
+
 import java.awt.Color;
 
-import entidades.Ponto2D;
-import entidades.enums.*;
-import entidades.interfaces.Personagem;
 import lib.GameLib;
 
-public class Jogador implements Personagem{// estado
-	private Ponto2D posicao;
-																// raio (tamanho aproximado do player)
-	private double player_explosion_start;						// instante do início da explosão
-	private double player_explosion_end;						// instante do final da explosão
-	private long proximoTiro;
-	private long currentTime; 									// instante a partir do qual pode haver um próximo tiro
-	private Estado estado = Estado.ATIVO;
-	private Formato formato = Formato.PLAYER;
-	private long inicioExplosao;
-	private long fimExplosao;
-	private Forma forma;
-	private double tamanhoPlayer;
+import entidades.enums.*;
+
+import entidades.interfaces.*;
+
+// Classe do jogador
+public class Jogador implements Personagem {
+	private Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
+	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
 	
+	private double inicioExplosao; // Instante de início da explosão
+	private double fimExplosao; // Instante de fim da explosão
 	
-	public Jogador(double player_explosion_start, double player_explosion_end,
-			long player_nextShot, long currentTime, Estado estado, double tamanhoPlayer, Color corPlayer, Formato formatoPlayer, Forma forma) {
-		super();
-		this.posicao = new Ponto2D(GameLib.WIDTH / 2,GameLib.HEIGHT * 0.90,0.25,0.25);
-		this.forma = new Forma(getTamanhoPlayer(), corPlayer, formatoPlayer);
-		this.player_explosion_start = player_explosion_start;
-		this.player_explosion_end = player_explosion_end;
-		this.proximoTiro = player_nextShot;
-		this.currentTime = currentTime;
-		this.estado = estado;
+	// private ProjetilJogador projetil;
+	
+	private long proximoTiro; // Instante do próximo tiro
+	
+	protected Estado estado; // Estado (ativo, inativo ou explodindo)
+	
+	public Jogador(long tempoAtual) {
+		this.posicao = new Ponto2D(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, 0.25, 0.25);
+		this.forma = new Forma(12.0, Color.BLUE, Formato.PLAYER);
+		
+		this.proximoTiro = tempoAtual;
+		
+		this.estado = Estado.ATIVO;
 	}
 	
+	// Método get da coordenada X do jogador
+	public double getX() {
+		return this.posicao.getX();
+	}
 	
+	// Método get da coordenada Y do jogador
+	public double getY() {
+		return this.posicao.getY();
+	}
 	
-
-
-	public Jogador( Estado estado, Formato formato, double tamanhoPlayer, Color corPlayer) {
-		super();
-		this.posicao = new Ponto2D(GameLib.WIDTH / 2,GameLib.HEIGHT * 0.90,0.25,0.25);
-		this.forma = new Forma(tamanhoPlayer, corPlayer, formato);
-		this.estado = estado;
+	// Verifica a colisão do jogador com um projétil dos inimigos
+	public void colisaoComProjetil(long tempoAtual, double projetilX, double projetilY, double projetilRaio) {
+		if (this.estado == Estado.ATIVO && this.posicao.distancia(projetilX, projetilY) < (this.forma.getRaio() + projetilRaio) * 0.8) {
+			// Caso tenha ocorrido a colisão, atualiza o estado e os instantes da explosão
+			this.estado = Estado.EXPLODINDO;
+			this.inicioExplosao = tempoAtual;
+			this.fimExplosao = tempoAtual + 2000;
+		}
+	}
+	
+	// Verifica a colisão do jogador com os inimigos
+	public void colisaoComInimigo(long tempoAtual, double inimigoX, double inimigoY, double inimigoRaio) {
+		if (this.estado == Estado.ATIVO && this.posicao.distancia(inimigoX, inimigoY) < (this.forma.getRaio() + inimigoRaio) * 0.8) {
+			// Caso tenha ocorrido a colisão, atualiza o estado e os instantes da explosão
+			this.estado = Estado.EXPLODINDO;
+			this.inicioExplosao = tempoAtual;
+			this.fimExplosao = tempoAtual + 2000;
+		}
+	}
+	
+	// Verifica se o jogador explodiu e, em caso positivo, se a explosão terminou
+	public boolean verificaExplosao(long tempoAtual) {
+		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) return true;
+		return false;
+	}
+	
+	// Verificação e atualização de estado do jogador
+	public Estado verificaEstado(long tempoAtual, long delta) {
+		if (this.verificaExplosao(tempoAtual)) this.estado = Estado.ATIVO; 
+		if (this.estado == Estado.ATIVO) this.movimenta(delta);
+		return this.estado;
+	}
+	
+	// Movimentação do jogador
+	public void movimenta(long delta) {
+		if (GameLib.iskeyPressed(GameLib.KEY_UP)) this.posicao.setY(this.posicao.getY() - delta * this.posicao.getvY());
+		if (GameLib.iskeyPressed(GameLib.KEY_DOWN)) this.posicao.setY(this.posicao.getY() + delta * this.posicao.getvY());
+		if (GameLib.iskeyPressed(GameLib.KEY_LEFT)) this.posicao.setX(this.posicao.getX() - delta * this.posicao.getvX());
+		if (GameLib.iskeyPressed(GameLib.KEY_RIGHT)) this.posicao.setX(this.posicao.getX() + delta * this.posicao.getvX());
+		
+		// Mantém o jogador dentro da tela após processar a entrada do usuário
+		if (this.posicao.getX() < 0.0) this.posicao.setX(0.0);
+		if (this.posicao.getX() >= GameLib.WIDTH) this.posicao.setX(GameLib.WIDTH - 1);
+		if (this.posicao.getY() < 25.0) this.posicao.setY(25.0);
+		if (this.posicao.getY() >= GameLib.HEIGHT) this.posicao.setY(GameLib.HEIGHT - 1);
+	}
+	
+	// Verifica se é possível atirar e, em caso positivo, retorna um projétil novo
+	public ProjetilJogador atira(long tempoAtual) {
+		if (GameLib.iskeyPressed(GameLib.KEY_CONTROL) && tempoAtual > this.proximoTiro) {
+			this.proximoTiro = tempoAtual + 100;
+			return new ProjetilJogador(this.posicao.getX(), this.posicao.getY() - 2 * this.forma.getRaio(), 0.0, -1.0);
+		}
+		return null;
+	}
+	
+	// Desenha o inimigo na tela
+	public void desenha(long tempoAtual) {
+		// Desenha a explosão, caso o estado seja "explodindo"
+		if (this.estado == Estado.EXPLODINDO) {
+			double alpha = (tempoAtual - this.inicioExplosao) / (this.fimExplosao - this.inicioExplosao);
+			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
+		}
+		// No estado ativo, desenha o jogador em si
+		if (this.estado == Estado.ATIVO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
 	}
 
 
-
-
-
-	@Override
+	/*@Override
 	public Estado verificaEstado(long tempoAtual, long delta) {
 		if (this.estado == Estado.EXPLODINDO) this.fimExplosao(tempoAtual);
 		if(this.estado == Estado.ATIVO) {
@@ -72,12 +133,32 @@ public class Jogador implements Personagem{// estado
 	}
 	@Override
 	public void movimenta(long delta) {
-		// TODO Auto-generated method stub
-		
-	}
+		if(this.estado == Estado.ATIVO){
+			
+			if(GameLib.iskeyPressed(GameLib.KEY_UP)) posicao.setY(posicao.getY() - delta*posicao.getvY()); //setY(getY() - delta*posicao.getVY();
+			if(GameLib.iskeyPressed(GameLib.KEY_DOWN)) posicao.setY(posicao.getY() + delta*posicao.getvY());
+			if(GameLib.iskeyPressed(GameLib.KEY_LEFT)) posicao.setX(posicao.getX() - delta*posicao.getvX());
+			if(GameLib.iskeyPressed(GameLib.KEY_RIGHT)) posicao.setX(posicao.getX() + delta*posicao.getvX());
+			
+					}
+				}	
 	@Override
 	public void atira() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub]
+		if(GameLib.iskeyPressed(GameLib.KEY_CONTROL)) {
+			
+			if(currentTime > proximoTiro){
+				
+				int free = findFreeIndex(projetil.verificaEstado(fimExplosao, currentTime));
+										
+				if(free < projectile_states.length){
+					
+					projectile_X[free] = player_X;
+					projectile_Y[free] = player_Y - 2 * player_radius;
+					projectile_VX[free] = 0.0;
+					projectile_VY[free] = -1.0;
+					projectile_states[free] = 1;
+					player_nextShot = currentTime + 100;
 		
 	}
 	@Override
@@ -88,10 +169,8 @@ public class Jogador implements Personagem{// estado
 			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
 		}
 		// No estado ativo, desenha o inimigo em si
-		if (this.estado == Estado.ATIVO) {
-			GameLib.setColor(Color.GREEN);
-			GameLib.drawPlayer(this.posicao.getX(),  this.posicao.getY(), this.getPlayer_radius());
-		}
+		if (this.estado == Estado.ATIVO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
+	}
 
 	}
 
@@ -229,7 +308,7 @@ public class Jogador implements Personagem{// estado
 
 	public void setTamanhoPlayer(double tamanhoPlayer) {
 		this.tamanhoPlayer = tamanhoPlayer;
-	}
+	}*/
 	
 
 	

@@ -5,10 +5,7 @@ import java.awt.Color;
 
 import lib.GameLib;
 
-import entidades.enums.Estado;
-import entidades.enums.Formato;
-
-// import entidades.interfaces.Projetil;
+import entidades.enums.*;
 
 // Classe do inimigo de tipo 2
 public class InimigoComposto extends InimigoSimples {
@@ -20,7 +17,7 @@ public class InimigoComposto extends InimigoSimples {
 	private boolean podeAtirar = false; // Booleano que define se é possível atirar
 	
 	public InimigoComposto(long tempoAtual) {
-		super(InimigoComposto.proxInimigoPosX, -10.0, 0.42, (3 * Math.PI) / 2, 0.0, 0.0, 12.0, Color.MAGENTA, Formato.DIAMOND);
+		super(InimigoComposto.proxInimigoPosX, -10.0, 0.42, (3 * Math.PI) / 2, 0.0, (long) 0.0, 12.0, Color.MAGENTA, Formato.DIAMOND);
 		
 		InimigoComposto.contagem++;
 		

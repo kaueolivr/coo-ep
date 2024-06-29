@@ -48,23 +48,9 @@ public class Forma {
 		
 		GameLib.setColor(this.cor);
 		
-		if (this.formato == Formato.CIRCLE) { 
-			GameLib.drawCircle(x, y, this.raio);
-		}
-		if(this.formato == Formato.PLAYER) {
-			GameLib.drawPlayer(x,y,this.raio);
-		}
-		if(this.formato == Formato.DIAMOND ) {
-			GameLib.drawDiamond(x,y, this.raio);
-		}
+		if (this.formato == Formato.CIRCLE) GameLib.drawCircle(x, y, this.raio);
+		else if (this.formato == Formato.PLAYER) GameLib.drawPlayer(x,y,this.raio);
+		else if(this.formato == Formato.DIAMOND ) GameLib.drawDiamond(x,y, this.raio);
 		
-		}
-	// TAVA TENTANDO DESENHAR O PROJETIL DO INIMIGO AQUI, MAS N SEI COMO ELE FUNCIONA POR SER EM ARRAYLIST
-	
-	//public void desenhaProjetil() {
-		//while(this.estado == Estado.ATIVO) {
-		// if(this.formato == Formato.DIAMOND || this.formato == Formato.CIRCLE) {
-			
-		//}
-	//}
+	}
 }

@@ -11,6 +11,7 @@ import entidades.enums.Formato;
 
 import entidades.Fundo;
 import entidades.InimigoBasico;
+import entidades.ProjetilInimigo;
 
 public class Jogo {
 	Fundo fundoDistante;
@@ -18,6 +19,8 @@ public class Jogo {
 	
 	private LinkedList<InimigoBasico> inimigosTipo1; // Conjunto de inimigos de tipo 1
 	private double proxInimigoTipo1; // Instante de criação de um novo inimigo de tipo 1
+	
+	private LinkedList<ProjetilInimigo> projeteisInimigos;
 	
 	// Inicializa as entidades do jogo
 	public void inicializaEntidades(long tempoAtual) {
@@ -27,6 +30,8 @@ public class Jogo {
 		
 		this.inimigosTipo1 = new LinkedList<InimigoBasico>(); // Cria a coleção de inimigos de tipo 1
 		this.proxInimigoTipo1 = tempoAtual + 2000; // Salva o instante para ser criado o primeiro inimigo de tipo 1
+		
+		this.projeteisInimigos = new LinkedList<ProjetilInimigo>(); // Cria a coleção de projéteis dos inimigos (de todos os tipos)
 	}
 	
 	// Verifica se é necessário criar novos inimigos e projéteis
@@ -41,11 +46,30 @@ public class Jogo {
 	// Verifica o estado das entidades
 	public void verificaEstado(long tempoAtual, long delta) {
 		// Cria um iterador para percorrer a LinkedList de inimigos de tipo 1
-		Iterator<InimigoBasico> i = this.inimigosTipo1.iterator();
+		Iterator<InimigoBasico> i1 = this.inimigosTipo1.iterator();
 		
-		while (i.hasNext()) {
+		while (i1.hasNext()) {
+			Estado estadoInimigo = i1.next().verificaEstado(tempoAtual, delta); 
+			
 			// Caso um inimigo tenha ficado inativo (saído da tela), remove-o da LinkedList
-			if (i.next().verificaEstado(tempoAtual, delta) == Estado.INATIVO) i.remove();
+			if (estadoInimigo == Estado.INATIVO) i1.remove();
+		}
+		
+		// Cria um iterador para percorrer a LinkedList de projéteis dos inimigos
+		Iterator<ProjetilInimigo> pI = this.projeteisInimigos.iterator();
+		
+		while (pI.hasNext()) {
+			Estado estadoProjetil = pI.next().verificaEstado(tempoAtual, delta); 
+			
+			// Caso um projétil tenha ficado inativo (saído da tela), remove-o da LinkedList
+			if (estadoProjetil == Estado.INATIVO) pI.remove();
+		}
+	}
+	
+	public void atiraProjeteis(long tempoAtual) {
+		for (InimigoBasico i : this.inimigosTipo1) {
+			ProjetilInimigo projetil = (ProjetilInimigo) i.atira(tempoAtual);
+			if (projetil != null) this.projeteisInimigos.addLast(projetil);
 		}
 	}
 	
@@ -57,5 +81,8 @@ public class Jogo {
 		
 		// Desenha os inimigos de tipo 1
 		for (InimigoBasico i : this.inimigosTipo1) i.desenha(tempoAtual);
+		
+		// Desenha os projéteis inimigos
+		for (ProjetilInimigo i : this.projeteisInimigos) i.desenha(tempoAtual);
 	}
 }

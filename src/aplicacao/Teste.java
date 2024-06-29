@@ -22,7 +22,6 @@ public class Teste {
 		
 		jogo.inicializaEntidades(currentTime);
 		
-		//ConjuntoProjeteisInimigos projeteisinimigos1 = new ConjuntoProjeteisInimigos(2.0, Color.RED, currentTime); 
 		//ConjuntoProjeteisJogador projeteisjogador1 = new ConjuntoProjeteisJogador(Color.GREEN, currentTime); 
 		
 		//Jogador player = new Jogador();
@@ -63,10 +62,11 @@ public class Teste {
 			// Verifica o estado das entidades do jogo
 			jogo.verificaEstado(currentTime, delta);
 			
-			//projeteisinimigos1.verificaNovoProjetil(currentTime);
+			// Atira os projéteis dos personagens
+			jogo.atiraProjeteis(currentTime);
+			
 			//projeteisjogador1.verificaNovoProjetil(currentTime);
 			
-			//projeteisinimigos1.verificaEstado(currentTime, delta);
 			//projeteisjogador1.verificaEstado(currentTime, delta);
 			
 			/*******************/
@@ -76,7 +76,6 @@ public class Teste {
 			// Desenha as entidades do jogo
 			jogo.desenha(currentTime, delta);
 			
-			//projeteisinimigos1.desenha(currentTime);
 			//projeteisjogador1.desenha(currentTime);
 			
 			//player.desenha(currentTime);

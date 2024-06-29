@@ -7,10 +7,11 @@ import lib.GameLib;
 import entidades.enums.*;
 
 import entidades.interfaces.Personagem;
+import entidades.interfaces.Projetil;
 
 public class InimigoBasico implements Personagem {		
 	private Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
-	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, formato e cor) por meio da classe Forma
+	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
 	
 	private Estado estado; // Estado (ativo, inativo ou explodindo)
 	private double angulo; // Ângulo (indica direção do movimento)
@@ -37,11 +38,8 @@ public class InimigoBasico implements Personagem {
 	public Estado verificaEstado(long tempoAtual, long delta) {
 		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) this.estado = Estado.INATIVO; // fimExplosao
 		if (this.estado == Estado.ATIVO) {
-			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // verificaSaidaDaTela
-			else {
-				movimenta(delta);
-				if (tempoAtual > this.proximoTiro) atira(); // Também precisa ter um this.posicao.getvY() < jogador.getY()
-			}
+			if (this.posicao.getY() > GameLib.HEIGHT + 10) this.estado = Estado.INATIVO; // Define o estado como inativo caso o inimigo tenha saído da tela
+			else movimenta(delta);
 		}
 		return this.estado;
 	}
@@ -53,9 +51,13 @@ public class InimigoBasico implements Personagem {
 		this.angulo += this.rv * delta; 
 	}
 	
-	// Implementar
-	public void atira() {
-		//criaNovoProjetil(tempoAtual, + informa��es desse inimigo)?
+	// Verifica se é possível atirar e, em caso positivo, retorna um projétil novo
+	public Projetil atira(long tempoAtual) {
+		if (tempoAtual > this.proximoTiro) {
+			this.proximoTiro = (long) (tempoAtual + 200 + Math.random() * 500); // Atualiza o instante do próximo tiro
+			return new ProjetilInimigo(this.posicao.getX(), this.posicao.getY(), Math.cos(this.angulo) * 0.45, Math.sin(this.angulo) * 0.45 * (-1.0)); // Cria um projétil novo
+		}
+		return null;
 	}
 
 	// Desenha o inimigo na tela

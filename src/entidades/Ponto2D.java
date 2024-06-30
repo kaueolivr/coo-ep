@@ -2,11 +2,11 @@ package entidades;
 
 // Classe que representa a posição (coordenadas e velocidades nos eixos) de uma entidade
 public class Ponto2D {
-	private double x; // Coordenada x
-	private double y; // Coordenada y
+	protected double x; // Coordenada x
+	protected double y; // Coordenada y
 	
-	private double vX; // Velocidade no eixo x
-	private double vY; // Velocidade no eixo y
+	protected double vX; // Velocidade no eixo x
+	protected double vY; // Velocidade no eixo y
 	
 	protected Ponto2D(double x, double y, double vX, double vY) {
 		this.x = x;

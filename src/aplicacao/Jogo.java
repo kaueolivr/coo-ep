@@ -9,6 +9,7 @@ import entidades.enums.Estado;
 
 import entidades.Fundo;
 import entidades.Jogador;
+import entidades.PowerUP;
 import entidades.InimigoSimples;
 import entidades.InimigoComposto;
 import entidades.ProjetilJogador;
@@ -26,6 +27,8 @@ public class Jogo {
 	private LinkedList<ProjetilJogador> projeteisJogador; // Coleção de projéteis do jogador
 	private LinkedList<ProjetilInimigo> projeteisInimigos; // Coleção de projéteis dos inimigos
 	
+	private LinkedList<PowerUP> powerup; // coleção de powerups
+	
 	// Inicializa as entidades do jogo
 	public void inicializaEntidades(long tempoAtual, int vidaJogador) {
 		// Criação dos objetos dos fundos próximo e distante
@@ -34,6 +37,8 @@ public class Jogo {
 		
 		// Inicializa o objeto jogador
 		jogador = new Jogador(tempoAtual, vidaJogador);
+		jogador.setvX(0.25);
+		jogador.setvY(0.25);
 		
 		this.inimigosTipo1 = new LinkedList<InimigoSimples>(); // Cria a coleção de inimigos de tipo 1
 		InimigoSimples.proxInimigo = tempoAtual + 2000; // Salva o instante para ser criado o primeiro inimigo de tipo 1
@@ -43,6 +48,9 @@ public class Jogo {
 		
 		this.projeteisInimigos = new LinkedList<ProjetilInimigo>(); // Cria a coleção de projéteis dos inimigos (de todos os tipos)
 		this.projeteisJogador = new LinkedList<ProjetilJogador>(); // Cria a coleção de projéteis do jogador
+		
+		this.powerup = new LinkedList<PowerUP>();
+		PowerUP.proximoPowerUp = tempoAtual + 12000;
 	}
 	
 	public void verificaColisoes(long tempoAtual) {	
@@ -52,6 +60,8 @@ public class Jogo {
 		// Verifica se ocorreram colisões entre o jogador e os inimigos
 		for (InimigoSimples i1 : this.inimigosTipo1) this.jogador.colisaoComInimigo(tempoAtual, i1.getX(), i1.getY(), i1.getRaio());
 		for (InimigoComposto i2 : this.inimigosTipo2) this.jogador.colisaoComInimigo(tempoAtual, i2.getX(), i2.getY(), i2.getRaio());
+		
+		for (PowerUP pw : this.powerup) this.jogador.colisaoComPowerUp(tempoAtual, pw.getX(), pw.getY(), pw.getRaio());
 		
 		// Verifica se ocorreram colisões entre os projéteis do jogador e os inimigos
 		for (ProjetilJogador pJ : projeteisJogador) {
@@ -123,6 +133,13 @@ public class Jogo {
 			// Caso um projétil tenha ficado inativo (saído da tela), remove-o da coleção
 			if (estadoProjetil == Estado.INATIVO) pI.remove();
 		}
+		
+		Iterator<PowerUP> pw = this.powerup.iterator();
+		while(pw.hasNext()) {
+			Estado estadoPowerUP = pw.next().verificaEstado(tempoAtual, delta); 
+			
+			if (estadoPowerUP == Estado.INATIVO) pw.remove();
+		}
 	}
 	
 	// Verifica se é necessário criar novos inimigos e projéteis
@@ -132,6 +149,8 @@ public class Jogo {
 		
 		// Verifica se é possível criar um inimigo de tipo 2 e, se for o caso, cria o inimigo e o adiciona à coleção
 		if (tempoAtual > InimigoComposto.proxInimigo) this.inimigosTipo2.addLast(new InimigoComposto(tempoAtual));
+		
+		if(tempoAtual > PowerUP.proximoPowerUp) this.powerup.addLast(new PowerUP(tempoAtual));
 	}
 	
 	// Desenha as entidades na tela
@@ -148,6 +167,8 @@ public class Jogo {
 		
 		// Desenha os inimigos de tipo 2
 		for (InimigoComposto i1 : this.inimigosTipo2) i1.desenha(tempoAtual);
+		
+		for (PowerUP pw : this.powerup) pw.desenha(tempoAtual);
 		
 		// Desenha os projéteis dos inimigos
 		for (ProjetilInimigo pI : this.projeteisInimigos) pI.desenha(tempoAtual);

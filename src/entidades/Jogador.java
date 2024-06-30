@@ -10,7 +10,7 @@ import entidades.interfaces.*;
 
 // Classe do jogador
 public class Jogador implements Personagem {
-	private Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
+	protected Ponto2D posicao; // Utiliza-se composição para representar a posição do inimigo por meio da classe Ponto2D
 	private Forma forma; // Utiliza-se composição para representar o desenho (com tamanho, cor e formato) por meio da classe Forma
 	
 	private int vidaMaxima; // Quantidade máxima de pontos de vida
@@ -21,11 +21,13 @@ public class Jogador implements Personagem {
 	
 	private long proximoTiro; // Instante do próximo tiro
 	private long tempoInvulneravel; // Instante até o qual o jogador não perde vida (após ter tomado dano)
+	private long tempoSobEfeito;
 	
 	protected Estado estado; // Estado (ativo, inativo ou explodindo)
+	protected double vX, vY;
 	
 	public Jogador(long tempoAtual, int vida) {
-		this.posicao = new Ponto2D(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, 0.25, 0.25);
+		this.posicao = new Ponto2D(GameLib.WIDTH / 2, GameLib.HEIGHT * 0.90, getvX(), getvY());
 		this.forma = new Forma(12.0, Color.BLUE, Formato.PLAYER);
 		
 		this.vidaMaxima = vida;
@@ -35,7 +37,13 @@ public class Jogador implements Personagem {
 		
 		this.estado = Estado.ATIVO;
 	}
-	
+// só para utilizar composição no pwup
+	public Jogador() {
+		super();
+	}
+
+
+
 	// Método get da coordenada X do jogador
 	public double getX() {
 		return this.posicao.getX();
@@ -82,6 +90,18 @@ public class Jogador implements Personagem {
 		}
 	}
 	
+	public boolean colisaoComPowerUp(long tempoAtual, double powerUpX, double powerUpY, double powerUpRaio) {
+		if(this.estado == Estado.ATIVO && this.posicao.distancia(powerUpX, powerUpY) < (this.forma.getRaio() + (powerUpRaio * 3)) * 0.8){
+			this.estado = Estado.SOBEFEITO;
+			this.forma.setCor(Color.ORANGE); // Muda a cor do personagem
+			posicao.setvX(posicao.getvX() + 0.08); 
+			posicao.setvY(posicao.getvY() + 0.08);
+			this.tempoSobEfeito = tempoAtual + 2000;
+			return true;
+		}
+		return false;
+	}
+	
 	// Verifica se o jogador explodiu e, em caso positivo, se a explosão terminou
 	public boolean verificaFimExplosao(long tempoAtual) {
 		if (this.estado == Estado.EXPLODINDO && tempoAtual > this.fimExplosao) {
@@ -100,9 +120,16 @@ public class Jogador implements Personagem {
 			this.estado = Estado.ATIVO;
 			this.forma.setCor(Color.BLUE);
 		}
+		if (this.estado == Estado.SOBEFEITO && tempoAtual > this.tempoSobEfeito) { // isso aq ta funcionando legal
+			this.estado = Estado.ATIVO;
+			this.forma.setCor(Color.BLUE);
+			posicao.setvX(0.25); 
+			posicao.setvY(0.25);
+		}
 		// Caso possível, realiza o movimento
-		if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO) this.movimenta(delta);
+		if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO || this.estado == Estado.SOBEFEITO) this.movimenta(delta);
 		return this.estado;
+		
 	}
 	
 	// Movimentação do jogador
@@ -136,6 +163,29 @@ public class Jogador implements Personagem {
 			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
 		}
 		// No estado ativo ou atingido, desenha o jogador em si
-		if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
+		else if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
+		
+		else if(this.estado == Estado.SOBEFEITO) {
+			this.forma.desenha(this.posicao.getX(), this.posicao.getY()); // vai ficar vermelho e com velocidade adicional
+		}
 	}
+
+	public double getvX() {
+		return vX;
+	}
+
+	public void setvX(double vX) {
+		this.posicao.vX = vX;
+	}
+
+	public double getvY() {
+		return vX;
+	}
+
+	public void setvY(double vY) {
+		this.posicao.vY = vY;
+	}
+	
+	
+	
 }

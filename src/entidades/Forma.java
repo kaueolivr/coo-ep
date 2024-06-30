@@ -47,7 +47,7 @@ public class Forma {
 	public void desenha(double x, double y) {
 		GameLib.setColor(this.cor);
 		
-		if (this.formato == Formato.CIRCLE) GameLib.drawCircle(x, y, this.raio);
+		if (this.formato == Formato.CIRCLE ) GameLib.drawCircle(x, y, this.raio);
 		else if (this.formato == Formato.PLAYER) GameLib.drawPlayer(x, y, this.raio);
 		else if (this.formato == Formato.DIAMOND) GameLib.drawDiamond(x, y, this.raio);
 		else if (this.formato == Formato.LINE) {
@@ -55,6 +55,5 @@ public class Forma {
 			GameLib.drawLine(x - 1, y - 3, x - 1, y + 3);
 			GameLib.drawLine(x + 1, y - 3, x + 1, y + 3);
 		}
-		
 	}
 }

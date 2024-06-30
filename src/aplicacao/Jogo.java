@@ -6,12 +6,14 @@ import java.util.Iterator;
 import java.awt.Color;
 
 import entidades.enums.Estado;
-
+import lib.GameLib;
+import entidades.BarraVida;
 import entidades.Fundo;
 import entidades.Jogador;
 import entidades.PowerUP;
 import entidades.InimigoSimples;
 import entidades.InimigoComposto;
+import entidades.InimigoNovo;
 import entidades.ProjetilJogador;
 import entidades.ProjetilInimigo;
 
@@ -20,6 +22,7 @@ public class Jogo {
 	Fundo fundoProximo; // Objeto do fundo próximo
 	
 	private Jogador jogador;
+	private BarraVida barraVida;
 	
 	private LinkedList<InimigoSimples> inimigosTipo1; // Coleção de inimigos de tipo 1
 	private LinkedList<InimigoComposto> inimigosTipo2; // Coleção de inimigos de tipo 2
@@ -39,6 +42,7 @@ public class Jogo {
 		jogador = new Jogador(tempoAtual, vidaJogador);
 		jogador.setvX(0.25);
 		jogador.setvY(0.25);
+		barraVida = new BarraVida(this.jogador, 875, 20, 35, 35, Color.BLACK, Color.RED);
 		
 		this.inimigosTipo1 = new LinkedList<InimigoSimples>(); // Cria a coleção de inimigos de tipo 1
 		InimigoSimples.proxInimigo = tempoAtual + 2000; // Salva o instante para ser criado o primeiro inimigo de tipo 1
@@ -75,7 +79,7 @@ public class Jogo {
 		
 		// Verifica o estado do jogador
 		Estado estadoJogador = this.jogador.verificaEstado(tempoAtual, delta); 
-		if (estadoJogador == Estado.ATIVO) {
+		if (estadoJogador == Estado.ATIVO || estadoJogador == Estado.SOBEFEITO) {
 			ProjetilJogador projetilJ = this.jogador.atira(tempoAtual);
 			if (projetilJ != null) this.projeteisJogador.addLast(projetilJ);
 		}
@@ -138,7 +142,7 @@ public class Jogo {
 		while(pw.hasNext()) {
 			Estado estadoPowerUP = pw.next().verificaEstado(tempoAtual, delta); 
 			
-			if (estadoPowerUP == Estado.INATIVO) pw.remove();
+			if (estadoPowerUP == Estado.INATIVO || estadoJogador == Estado.SOBEFEITO) pw.remove();
 		}
 	}
 	
@@ -161,6 +165,9 @@ public class Jogo {
 		
 		// Desenha o jogador
 		this.jogador.desenha(tempoAtual);
+		
+		// Desenha barra de vida
+		this.barraVida.desenha();
 		
 		// Desenha os inimigos de tipo 1
 		for (InimigoSimples i1 : this.inimigosTipo1) i1.desenha(tempoAtual);

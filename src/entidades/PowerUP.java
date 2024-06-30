@@ -18,7 +18,7 @@ public class PowerUP {
 	
 	public PowerUP(long tempoAtual) {
 		this.posicao  = new Ponto2D(Math.random() * (GameLib.WIDTH) + 40.0, Math.random() * (GameLib.WIDTH) + 45.0, 0, 0);
-		this.forma = new Forma(4.3, Color.MAGENTA , Formato.CIRCLE);
+		this.forma = new Forma(4.6, Color.MAGENTA , Formato.CIRCLE);
 		this.estado = Estado.ATIVO;
 		this.jogador = new Jogador(); 
 		this.tempoDeDuracaoNaTela = tempoAtual + 2500;

@@ -93,10 +93,10 @@ public class Jogador implements Personagem {
 	public boolean colisaoComPowerUp(long tempoAtual, double powerUpX, double powerUpY, double powerUpRaio) {
 		if(this.estado == Estado.ATIVO && this.posicao.distancia(powerUpX, powerUpY) < (this.forma.getRaio() + (powerUpRaio * 3)) * 0.8){
 			this.estado = Estado.SOBEFEITO;
-			this.forma.setCor(Color.ORANGE); // Muda a cor do personagem
-			posicao.setvX(posicao.getvX() + 0.08); 
-			posicao.setvY(posicao.getvY() + 0.08);
-			this.tempoSobEfeito = tempoAtual + 2000;
+			this.forma.setCor(Color.MAGENTA); // Muda a cor do personagem
+			this.posicao.setvX(this.posicao.getvX() + 0.125);
+			this.posicao.setvY(this.posicao.getvY() + 0.125);
+			this.tempoSobEfeito = tempoAtual + 3000;
 			return true;
 		}
 		return false;
@@ -163,11 +163,8 @@ public class Jogador implements Personagem {
 			GameLib.drawExplosion(this.posicao.getX(), this.posicao.getY(), alpha);
 		}
 		// No estado ativo ou atingido, desenha o jogador em si
-		else if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
+		else if (this.estado == Estado.ATIVO || this.estado == Estado.ATINGIDO || this.estado == Estado.SOBEFEITO) this.forma.desenha(this.posicao.getX(), this.posicao.getY());
 		
-		else if(this.estado == Estado.SOBEFEITO) {
-			this.forma.desenha(this.posicao.getX(), this.posicao.getY()); // vai ficar vermelho e com velocidade adicional
-		}
 	}
 
 	public double getvX() {
@@ -184,6 +181,18 @@ public class Jogador implements Personagem {
 
 	public void setvY(double vY) {
 		this.posicao.vY = vY;
+	}
+	public int getVidaMaxima() {
+		return vidaMaxima;
+	}
+	public void setVidaMaxima(int vidaMaxima) {
+		this.vidaMaxima = vidaMaxima;
+	}
+	public int getVidaAtual() {
+		return vidaAtual;
+	}
+	public void setVidaAtual(int vidaAtual) {
+		this.vidaAtual = vidaAtual;
 	}
 	
 	

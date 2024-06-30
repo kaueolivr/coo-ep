@@ -54,6 +54,7 @@ public class Forma {
 			GameLib.drawLine(x, y - 5, x, y + 5);
 			GameLib.drawLine(x - 1, y - 3, x - 1, y + 3);
 			GameLib.drawLine(x + 1, y - 3, x + 1, y + 3);
-		}
+		
+	}
 	}
 }

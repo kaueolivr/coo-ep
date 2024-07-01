@@ -6,14 +6,13 @@ import java.util.Iterator;
 import java.awt.Color;
 
 import entidades.enums.Estado;
-import lib.GameLib;
 import entidades.BarraVida;
 import entidades.Fundo;
 import entidades.Jogador;
 import entidades.PowerUP;
 import entidades.InimigoSimples;
 import entidades.InimigoComposto;
-import entidades.InimigoNovo;
+import entidades.InimigoHorizontal;
 import entidades.ProjetilJogador;
 import entidades.ProjetilInimigo;
 
@@ -26,6 +25,7 @@ public class Jogo {
 	
 	private LinkedList<InimigoSimples> inimigosTipo1; // Coleção de inimigos de tipo 1
 	private LinkedList<InimigoComposto> inimigosTipo2; // Coleção de inimigos de tipo 2
+	private LinkedList<InimigoHorizontal> inimigosTipo3; // Coleção de inimigos de tipo 3
 	
 	private LinkedList<ProjetilJogador> projeteisJogador; // Coleção de projéteis do jogador
 	private LinkedList<ProjetilInimigo> projeteisInimigos; // Coleção de projéteis dos inimigos
@@ -50,6 +50,9 @@ public class Jogo {
 		this.inimigosTipo2 = new LinkedList<InimigoComposto>(); // Cria a coleção de inimigos de tipo 2
 		InimigoComposto.proxInimigo = tempoAtual + 7000; // Define o instante inicial em que um inimigo de tipo 2 deve ser criado
 		
+		this.inimigosTipo3 = new LinkedList<InimigoHorizontal>(); // Cria a coleção de inimigos de tipo 3
+		InimigoHorizontal.proxInimigo = tempoAtual + 5000; // Define o instante inicial em que um inimigo de tipo 3 deve ser criado
+		
 		this.projeteisInimigos = new LinkedList<ProjetilInimigo>(); // Cria a coleção de projéteis dos inimigos (de todos os tipos)
 		this.projeteisJogador = new LinkedList<ProjetilJogador>(); // Cria a coleção de projéteis do jogador
 		
@@ -64,6 +67,7 @@ public class Jogo {
 		// Verifica se ocorreram colisões entre o jogador e os inimigos
 		for (InimigoSimples i1 : this.inimigosTipo1) this.jogador.colisaoComInimigo(tempoAtual, i1.getX(), i1.getY(), i1.getRaio());
 		for (InimigoComposto i2 : this.inimigosTipo2) this.jogador.colisaoComInimigo(tempoAtual, i2.getX(), i2.getY(), i2.getRaio());
+		for (InimigoHorizontal i3 : this.inimigosTipo3) this.jogador.colisaoComInimigo(tempoAtual, i3.getX(), i3.getY(), i3.getRaio());
 		
 		for (PowerUP pw : this.powerup) this.jogador.colisaoComPowerUp(tempoAtual, pw.getX(), pw.getY(), pw.getRaio());
 		
@@ -71,6 +75,7 @@ public class Jogo {
 		for (ProjetilJogador pJ : projeteisJogador) {
 			for (InimigoSimples i1 : this.inimigosTipo1) i1.colisaoComProjetil(tempoAtual, pJ.getX(), pJ.getY());
 			for (InimigoComposto i2 : this.inimigosTipo2) i2.colisaoComProjetil(tempoAtual, pJ.getX(), pJ.getY());
+			for (InimigoHorizontal i3 : this.inimigosTipo3) i3.colisaoComProjetil(tempoAtual, pJ.getX(), pJ.getY());
 		}
 	}
 	
@@ -118,6 +123,24 @@ public class Jogo {
 			}
 		}
 		
+		// Cria um iterador para percorrer a coleção de inimigos de tipo 3
+		Iterator<InimigoHorizontal> i3 = this.inimigosTipo3.iterator();
+		
+		while (i3.hasNext()) {
+			InimigoHorizontal inimigo3 = i3.next();
+			Estado estadoInimigo3 = inimigo3.verificaEstado(tempoAtual, delta); 
+			
+			// Caso um inimigo tenha ficado inativo (saído da tela), remove-o da coleção
+			if (estadoInimigo3 == Estado.INATIVO) i3.remove();
+			// Caso o inimigo esteja ativo, tenta atirar e armazena os projéteis na coleção, caso tenha ocorrido o disparo
+			else if (estadoInimigo3 == Estado.ATIVO) {
+				ArrayList<ProjetilInimigo> projeteis = inimigo3.atira(tempoAtual);
+				if (projeteis != null) {
+					for (ProjetilInimigo j : projeteis) this.projeteisInimigos.addLast(j);
+				}
+			}
+		}
+		
 		// Cria um iterador para percorrer a coleção de projéteis do jogador
 		Iterator<ProjetilJogador> pJ = this.projeteisJogador.iterator();
 		
@@ -154,7 +177,10 @@ public class Jogo {
 		// Verifica se é possível criar um inimigo de tipo 2 e, se for o caso, cria o inimigo e o adiciona à coleção
 		if (tempoAtual > InimigoComposto.proxInimigo) this.inimigosTipo2.addLast(new InimigoComposto(tempoAtual));
 		
-		if(tempoAtual > PowerUP.proximoPowerUp) this.powerup.addLast(new PowerUP(tempoAtual));
+		// Verifica se é possível criar um inimigo de tipo 3 e, se for o caso, cria o inimigo e o adiciona à coleção
+		if (tempoAtual > InimigoHorizontal.proxInimigo) this.inimigosTipo3.addLast(new InimigoHorizontal(tempoAtual));
+		
+		if (tempoAtual > PowerUP.proximoPowerUp) this.powerup.addLast(new PowerUP(tempoAtual));
 	}
 	
 	// Desenha as entidades na tela
@@ -174,6 +200,9 @@ public class Jogo {
 		
 		// Desenha os inimigos de tipo 2
 		for (InimigoComposto i1 : this.inimigosTipo2) i1.desenha(tempoAtual);
+		
+		// Desenha os inimigos de tipo 3
+		for (InimigoHorizontal i3 : this.inimigosTipo3) i3.desenha(tempoAtual);
 		
 		for (PowerUP pw : this.powerup) pw.desenha(tempoAtual);
 		

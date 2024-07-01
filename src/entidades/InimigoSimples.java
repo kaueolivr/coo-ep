@@ -20,7 +20,7 @@ public class InimigoSimples implements Personagem {
 	private double inicioExplosao; // Instante de início da explosão
 	private double fimExplosao; // Instante de fim da explosão
 	
-	private long proximoTiro; // Instante do próximo tiro
+	protected long proximoTiro; // Instante do próximo tiro
 	
 	public static long proxInimigo; // Instante em que um novo inimigo de tipo 1 deve aparecer
 	

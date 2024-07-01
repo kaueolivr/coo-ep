@@ -66,6 +66,7 @@ public class InimigoComposto extends InimigoSimples {
 		}
 	}
 	
+	// Disparo do inimigo de tipo 2
 	public ArrayList<ProjetilInimigo> atira() {
 		// Caso possa atirar (esteja na posição de tiro), retorna três projéteis
 		if (this.podeAtirar) {

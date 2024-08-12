@@ -2,8 +2,6 @@ package entidades.interfaces;
 
 import entidades.enums.Estado;
 
-import entidades.Ponto2D;
-
 // A interface deve ser implementada pelas classes os projétis dos inimigos e do jogador
 public interface Projetil {
 	

@@ -7,7 +7,7 @@ import entidades.enums.Formato;
 import lib.GameLib;
 
 public class PowerUP {
-	// o que é um pwoe up? é um objeto que aparece na tela e, caso colida com o player, incrementa velocidade vertical e horizonatal.
+	// O que é um Power Up? É um objeto que aparece na tela e, caso colida com o player, incrementa velocidade vertical e horizontal.
 	
 	private Ponto2D posicao;
 	private Estado estado;
@@ -21,8 +21,8 @@ public class PowerUP {
 		this.forma = new Forma(4.6, Color.MAGENTA , Formato.CIRCLE);
 		this.estado = Estado.ATIVO;
 		this.jogador = new Jogador(); 
-		this.tempoDeDuracaoNaTela = tempoAtual + 2500;
-		this.proximoPowerUp = this.tempoDeDuracaoNaTela + 400;
+		PowerUP.tempoDeDuracaoNaTela = tempoAtual + 2500;
+		PowerUP.proximoPowerUp = PowerUP.tempoDeDuracaoNaTela + 400;
 	}
 	
 	public double getX() {

@@ -12,7 +12,7 @@ O código reescrito deveria seguir os princípios da programação orientada a o
 
 ## Grupo
 
-O projeto foi desenvolvido pelo seguinte grupo de estudantes de Sistemas de Informação na EACH-USP:
+O projeto foi desenvolvido pelo seguinte grupo, formado por estudantes de Sistemas de Informação da Escola de Artes, Ciências e Humanidades da Universidade de São Paulo.
 
 - Kauê Patrick de Oliveira
 - Gustavo Pompermayer Fulanetti Silva
